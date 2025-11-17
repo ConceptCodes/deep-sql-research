@@ -1,0 +1,30 @@
+{
+  "name": "@deep-sql-research/agent",
+  "version": "0.1.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "studio": "bunx @langchain/langgraph-cli@latest dev"
+  },
+  "dependencies": {
+    "@deep-sql-research/shared": "workspace:*",
+    "@langchain/core": "^0.3.57",
+    "@langchain/langgraph": "^0.2.73",
+    "@langchain/ollama": "^0.2.0",
+    "@langchain/openai": "^0.5.11",
+    "langchain": "^0.3.27",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7",
+    "typeorm": "^0.3.24",
+    "zod": "^3.25.28"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.14",
+    "typescript": "^5.8.3"
+  }
+}

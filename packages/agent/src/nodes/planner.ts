@@ -3,7 +3,7 @@ import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 
 import type { AgentStateAnnotation } from "@/agent/state";
 import { generatePlanSystemPrompt } from "@/agent/prompts";
-import { taskSchema } from "@/helpers/types";
+import { taskSchema } from "@shared/types";
 import { llm } from "@/helpers/llm";
 import { listTableSchemas } from "@/helpers/db";
 

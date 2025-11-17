@@ -1,4 +1,4 @@
-import type { Section } from "./types";
+import type { Section } from "@shared/types";
 
 export const formatSections = (sections: Section[]): string => {
   let formatted_str = "";

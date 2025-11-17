@@ -4,8 +4,8 @@ import { Command, END } from "@langchain/langgraph";
 import { reviewPlanSystemPrompt } from "@/agent/prompts";
 import type { AgentStateAnnotation } from "@/agent/state";
 import { llm } from "@/helpers/llm";
-import { reviewSchema } from "@/helpers/types";
-import { Nodes } from "@/helpers/constants";
+import { reviewSchema } from "@shared/types";
+import { Nodes } from "@shared/constants";
 
 export const reviewPlanNode = async (
   state: typeof AgentStateAnnotation.State

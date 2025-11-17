@@ -1,7 +1,7 @@
 import { Command } from "@langchain/langgraph";
 
+import { Nodes } from "@shared/constants";
 import type { TaskStateAnnotation } from "@/agent/state";
-import { Nodes } from "@/helpers/constants";
 import { DBError, executeQuery } from "@/helpers/db";
 
 export const executeQueryNode = async (
@@ -15,7 +15,6 @@ export const executeQueryNode = async (
       goto: Nodes.GENERATE_QUERY,
       update: {
         error: results.message,
-        results: [],
       },
     });
   }

@@ -30,7 +30,10 @@
 
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
+      "@deep-sql-research/shared": ["./packages/shared/src"],
+      "@deep-sql-research/agent": ["./packages/agent/src"],
+      "@shared/*": ["./packages/shared/src/*"],
+      "@agent/*": ["./packages/agent/src/*"]
     }
   }
 }

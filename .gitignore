@@ -6,6 +6,10 @@ out
 dist
 *.tgz
 
+# monorepo build outputs
+packages/*/dist
+apps/*/dist
+
 # code coverage
 coverage
 *.lcov
@@ -27,6 +31,13 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .cache
 *.tsbuildinfo
 
+# Turbo
+.turbo
+
+# TypeScript build artifacts
+packages/*/tsconfig.tsbuildinfo
+apps/*/tsconfig.tsbuildinfo
+
 # IntelliJ based IDEs
 .idea
 
@@ -38,3 +49,8 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # LangGraph API
 .langgraph_api
+
+# Remotion (for future use)
+remotion.out
+packages/remotion/public/
+packages/remotion/dist/

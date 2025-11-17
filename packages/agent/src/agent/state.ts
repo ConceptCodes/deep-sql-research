@@ -1,29 +1,25 @@
 import { Annotation } from "@langchain/langgraph";
-import type { Task } from "../helpers/types";
+import type { Task } from "@shared/types";
 
 export const InputStateAnnotation = Annotation.Root({
-  goal: Annotation<string>,
-});
-
-export const OutputStateAnnotation = Annotation.Root({
-  finalReport: Annotation<string>,
-});
-
-export const TaskStateAnnotation = Annotation.Root({
-  feedback: Annotation<string>({
+  goal: Annotation<string>({
     reducer: (x, y) => y ?? x,
     default: () => "",
   }),
-  currentTask: Annotation<{
-    description: string;
-    success: string;
-  }>({
+  dbUrl: Annotation<string>({
     reducer: (x, y) => y ?? x,
-    default: () => ({
-      description: "",
-      success: "",
-    }),
+    default: () => "",
   }),
+});
+
+export const OutputStateAnnotation = Annotation.Root({
+  finalReport: Annotation<string>({
+    reducer: (x, y) => y ?? x,
+    default: () => "",
+  }),
+});
+
+export const QueryStateAnnotation = Annotation.Root({
   query: Annotation<string>({
     reducer: (x, y) => y ?? x,
     default: () => "",
@@ -42,15 +38,26 @@ export const TaskStateAnnotation = Annotation.Root({
   }),
 });
 
+export const TaskStateAnnotation = Annotation.Root({
+  feedback: Annotation<string>({
+    reducer: (x, y) => y ?? x,
+    default: () => "",
+  }),
+  currentTask: Annotation<Task>({
+    reducer: (x, y) => y ?? x,
+    default: () => ({
+      description: "",
+      successCase: "",
+    }),
+  }),
+
+  ...QueryStateAnnotation.spec,
+});
+
 export const AgentStateAnnotation = Annotation.Root({
   ...InputStateAnnotation.spec,
   ...OutputStateAnnotation.spec,
   ...TaskStateAnnotation.spec,
-
-  feedback: Annotation<string>({
-    reducer: (a, b) => b ?? a,
-    default: () => "",
-  }),
 
   tasks: Annotation<Task[]>({
     reducer: (a, b) => a.concat(b),

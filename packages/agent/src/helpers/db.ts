@@ -22,6 +22,7 @@ export async function connectToDatabase(dbPath: string): Promise<Database> {
     filename: absolute,
     driver: sqlite3.Database,
     mode: sqlite3.OPEN_READONLY,
+    
   });
 
   console.log(`Connected to ${absolute}`);
