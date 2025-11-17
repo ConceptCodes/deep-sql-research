@@ -1,5 +1,5 @@
 import { Annotation } from "@langchain/langgraph";
-import type { Task } from "@shared/types";
+import type { Task, Insight, TemplateJson } from "@shared/types";
 
 export const InputStateAnnotation = Annotation.Root({
   goal: Annotation<string>({
@@ -13,9 +13,13 @@ export const InputStateAnnotation = Annotation.Root({
 });
 
 export const OutputStateAnnotation = Annotation.Root({
-  finalReport: Annotation<string>({
+  insights: Annotation<Insight[]>({
     reducer: (x, y) => y ?? x,
-    default: () => "",
+    default: () => [],
+  }),
+  templateJson: Annotation<TemplateJson | null>({
+    reducer: (x, y) => y ?? x,
+    default: () => null,
   }),
 });
 
@@ -62,5 +66,37 @@ export const AgentStateAnnotation = Annotation.Root({
   tasks: Annotation<Task[]>({
     reducer: (a, b) => a.concat(b),
     default: () => [],
+  }),
+  hasEnoughInfo: Annotation<boolean>({
+    reducer: (x, y) => y ?? x,
+    default: () => false,
+  }),
+  reasoning: Annotation<string>({
+    reducer: (x, y) => y ?? x,
+    default: () => "",
+  }),
+  missingInfo: Annotation<string[]>({
+    reducer: (x, y) => y ?? x,
+    default: () => [],
+  }),
+  narrative: Annotation<any>({
+    reducer: (x, y) => y ?? x,
+    default: () => null,
+  }),
+  scenes: Annotation<any[]>({
+    reducer: (x, y) => y ?? x,
+    default: () => [],
+  }),
+  cards: Annotation<any[]>({
+    reducer: (x, y) => y ?? x,
+    default: () => [],
+  }),
+  timeline: Annotation<any>({
+    reducer: (x, y) => y ?? x,
+    default: () => null,
+  }),
+  templateJson: Annotation<any>({
+    reducer: (x, y) => y ?? x,
+    default: () => null,
   }),
 });

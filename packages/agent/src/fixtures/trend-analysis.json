@@ -1,0 +1,4 @@
+{
+  "goal": "Identify trends in content release patterns and their impact on viewer ratings over time",
+  "dbUrl": "netflixdb.sqlite"
+}

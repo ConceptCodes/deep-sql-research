@@ -1,0 +1,4 @@
+{
+  "goal": "Analyze Netflix content performance to understand what makes a show successful",
+  "dbUrl": "netflixdb.sqlite"
+}

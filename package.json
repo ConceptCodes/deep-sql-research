@@ -11,7 +11,8 @@
     "lint": "turbo run lint",
     "type-check": "turbo run type-check",
     "clean": "turbo run clean",
-    "studio": "turbo run studio --filter=agent"
+    "studio": "turbo run studio --filter=agent",
+    "generate-video": "bun run packages/agent/src/index.ts > template.json && bun run apps/renderer/src/cli.ts template.json"
   },
   "devDependencies": {
     "@types/bun": "^1.2.14",

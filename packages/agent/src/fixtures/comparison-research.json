@@ -1,0 +1,4 @@
+{
+  "goal": "Compare viewer engagement between movies and TV series to identify which format performs better",
+  "dbUrl": "netflixdb.sqlite"
+}
