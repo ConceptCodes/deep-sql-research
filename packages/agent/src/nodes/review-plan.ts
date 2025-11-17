@@ -1,5 +1,5 @@
-import { HumanMessage, SystemMessage } from "@langchain/core/messages";
-import { Command, END } from "@langchain/langgraph";
+import { generateObject } from 'ai';
+import { Command } from "@langchain/langgraph";
 
 import { reviewPlanSystemPrompt } from "@/agent/prompts";
 import type { AgentStateAnnotation } from "@/agent/state";
@@ -17,12 +17,14 @@ export const reviewPlanNode = async (
     "Please review the following plan and provide feedback.\n" +
     JSON.stringify(plan, null, 2);
 
-  const structuredLLM = llm.withStructuredOutput(reviewSchema);
+  const result = await generateObject({
+    model: llm,
+    schema: reviewSchema,
+    prompt: `${reviewPlanSystemPrompt}\n\n${prompt}`,
+    temperature: 0,
+  });
 
-  const { grade, feedback } = await structuredLLM.invoke([
-    new SystemMessage(reviewPlanSystemPrompt),
-    new HumanMessage(prompt),
-  ]);
+  const { grade, feedback } = result.object;
 
   switch (grade) {
     case "pass":

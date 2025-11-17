@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { HumanMessage, SystemMessage } from "@langchain/core/messages";
-
+import { generateObject } from 'ai';
 
 import type { TaskStateAnnotation } from "@/agent/state";
 import { llm } from "@/helpers/llm";
@@ -15,5 +14,17 @@ export const reviewResultsNode = async (
   state: typeof TaskStateAnnotation.State
 ) => {
   const { results, query, currentTask } = state;
-  const structuredLLM = llm.withStructuredOutput(outputSchema);
+  
+  const result = await generateObject({
+    model: llm,
+    schema: outputSchema,
+    prompt: `Based on the following SQL query results, generate follow-up questions for the user.
+
+Task: ${currentTask.description}
+Query: ${query}
+Results: ${JSON.stringify(results, null, 2)}`,
+    temperature: 0,
+  });
+
+  return { followUpQuestions: result.object.followUpQuestions };
 };

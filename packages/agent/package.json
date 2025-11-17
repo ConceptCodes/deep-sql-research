@@ -13,11 +13,9 @@
   },
   "dependencies": {
     "@deep-sql-research/shared": "workspace:*",
-    "@langchain/core": "^0.3.57",
     "@langchain/langgraph": "^0.2.73",
-    "@langchain/ollama": "^0.2.0",
-    "@langchain/openai": "^0.5.11",
-    "langchain": "^0.3.27",
+    "ai": "^5.0.93",
+    "@ai-sdk/openai": "^2.0.68",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7",
     "typeorm": "^0.3.24",

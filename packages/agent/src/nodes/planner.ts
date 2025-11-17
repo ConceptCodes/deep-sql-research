@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { HumanMessage, SystemMessage } from "@langchain/core/messages";
+import { generateObject } from 'ai';
 
 import type { AgentStateAnnotation } from "@/agent/state";
 import { generatePlanSystemPrompt } from "@/agent/prompts";
@@ -14,8 +14,6 @@ export const outputSchema = z.object({
 export const plannerNode = async (state: typeof AgentStateAnnotation.State) => {
   const { goal, feedback } = state;
 
-  const structuredLLM = llm.withStructuredOutput(outputSchema);
-
   let prompt = `Generate a plan for the following goal: ${goal}.`;
   if (feedback && feedback.trim() !== "") {
     prompt += `\nHere is some feedback on your earlier attempt: ${feedback}`;
@@ -24,10 +22,12 @@ export const plannerNode = async (state: typeof AgentStateAnnotation.State) => {
   const schema = await listTableSchemas();
   const systemPrompt = generatePlanSystemPrompt(schema);
 
-  const { tasks } = await structuredLLM.invoke([
-    new SystemMessage(systemPrompt),
-    new HumanMessage(prompt),
-  ]);
+  const result = await generateObject({
+    model: llm,
+    schema: outputSchema,
+    prompt: `${systemPrompt}\n\n${prompt}`,
+    temperature: 0,
+  });
 
-  return { tasks };
+  return { tasks: result.object.tasks };
 };
