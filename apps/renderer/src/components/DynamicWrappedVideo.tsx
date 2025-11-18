@@ -5,7 +5,7 @@ import { CardComponent } from "./cards/CardComponent";
 import { applyMotionPreset } from "../animations/motion-presets";
 import { useTheme } from "../themes/theme-system";
 
-interface DynamicWrappedVideoProps {
+export interface DynamicWrappedVideoProps {
   template: TemplateJson;
 }
 
@@ -68,7 +68,7 @@ interface SceneRendererProps {
 }
 
 const SceneRenderer: React.FC<SceneRendererProps> = ({ scene, cards, insights, theme, frame }) => {
-  const getLayoutStyle = (preset: string) => {
+  const getLayoutStyle = (preset: string): React.CSSProperties => {
     switch (preset) {
       case "center_focus":
         return {
@@ -93,7 +93,7 @@ const SceneRenderer: React.FC<SceneRendererProps> = ({ scene, cards, insights, t
       case "timeline":
         return {
           display: "flex",
-          flexDirection: "column",
+          flexDirection: "column" as const,
           height: "100%",
           justifyContent: "center",
         };

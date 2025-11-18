@@ -1,5 +1,5 @@
 import { Composition } from "remotion";
-import { DynamicWrappedVideo } from "./components/DynamicWrappedVideo";
+import { DynamicWrappedVideo, type DynamicWrappedVideoProps } from "./components/DynamicWrappedVideo";
 
 // Sample template data - in production this would come from the agent
 const sampleTemplate = {
@@ -130,7 +130,7 @@ export const VideoRoot: React.FC = () => {
     <>
       <Composition
         id="DynamicWrappedVideo"
-        component={DynamicWrappedVideo}
+        component={DynamicWrappedVideo as React.FC<any>}
         durationInFrames={sampleTemplate.timeline.totalDuration * 30} // 30 fps
         fps={30}
         width={1920}
