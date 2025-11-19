@@ -1,9 +1,8 @@
 import { z } from "zod";
-import { generateObject } from 'ai';
 
 import type { AgentStateAnnotation } from "@/agent/state";
 import type { Insight, SceneSpec, Card, CardVariant, CardMotion, CardStyle } from "@shared/types";
-import { llm } from "@/helpers/llm";
+import { generateSchemaObject } from "@/helpers/llm";
 
 const cardSchema = z.object({
   cards: z.array(z.object({
@@ -83,14 +82,13 @@ Design cards following these guidelines:
 Return a complete card design for each scene.`;
 
   try {
-    const result = await generateObject({
-      model: llm,
+    const result = await generateSchemaObject({
       schema: cardSchema,
       prompt,
       temperature: 0.2,
     });
 
-    const cards: Card[] = result.object.cards;
+    const cards: Card[] = result.cards;
     
     console.log(`Designed ${cards.length} cards for ${scenes.length} scenes`);
     

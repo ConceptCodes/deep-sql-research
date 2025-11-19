@@ -1,9 +1,8 @@
-import { generateObject } from 'ai';
 import { Command } from "@langchain/langgraph";
 
 import { reviewPlanSystemPrompt } from "@/agent/prompts";
 import type { AgentStateAnnotation } from "@/agent/state";
-import { llm } from "@/helpers/llm";
+import { generateSchemaObject } from "@/helpers/llm";
 import { reviewSchema } from "@shared/types";
 import { Nodes } from "@shared/constants";
 
@@ -17,14 +16,13 @@ export const reviewPlanNode = async (
     "Please review the following plan and provide feedback.\n" +
     JSON.stringify(plan, null, 2);
 
-  const result = await generateObject({
-    model: llm,
+  const result = await generateSchemaObject({
     schema: reviewSchema,
     prompt: `${reviewPlanSystemPrompt}\n\n${prompt}`,
     temperature: 0,
   });
 
-  const { grade, feedback } = result.object;
+  const { grade, feedback } = result;
 
   switch (grade) {
     case "pass":

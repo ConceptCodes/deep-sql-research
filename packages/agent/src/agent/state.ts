@@ -1,5 +1,5 @@
 import { Annotation } from "@langchain/langgraph";
-import type { Task, Insight, TemplateJson } from "@shared/types";
+import type { Insight, Task, NarrativeOutline, SceneSpec, Card, TemplateJson } from "@shared/types";
 
 export const InputStateAnnotation = Annotation.Root({
   goal: Annotation<string>({
@@ -14,7 +14,11 @@ export const InputStateAnnotation = Annotation.Root({
 
 export const OutputStateAnnotation = Annotation.Root({
   insights: Annotation<Insight[]>({
-    reducer: (x, y) => y ?? x,
+    reducer: (x, y) => {
+      if (!x) return y;
+      if (!y) return x;
+      return [...x, ...y];
+    },
     default: () => [],
   }),
   templateJson: Annotation<TemplateJson | null>({
@@ -28,74 +32,66 @@ export const QueryStateAnnotation = Annotation.Root({
     reducer: (x, y) => y ?? x,
     default: () => "",
   }),
-  params: Annotation<string[]>({
-    reducer: (x, y) => x.concat(y),
+  params: Annotation<any[]>({
+    reducer: (x, y) => y ?? x,
+    default: () => [],
+  }),
+  results: Annotation<any[]>({
+    reducer: (x, y) => y ?? x,
     default: () => [],
   }),
   error: Annotation<string>({
     reducer: (x, y) => y ?? x,
     default: () => "",
   }),
-  results: Annotation<any[]>({
+  analysis: Annotation<any>({
     reducer: (x, y) => y ?? x,
-    default: () => [],
+    default: () => null,
   }),
 });
 
 export const TaskStateAnnotation = Annotation.Root({
-  feedback: Annotation<string>({
-    reducer: (x, y) => y ?? x,
-    default: () => "",
-  }),
+  ...QueryStateAnnotation.spec,
   currentTask: Annotation<Task>({
     reducer: (x, y) => y ?? x,
-    default: () => ({
-      description: "",
-      successCase: "",
-    }),
+    default: () => ({} as Task),
   }),
-
-  ...QueryStateAnnotation.spec,
 });
 
 export const AgentStateAnnotation = Annotation.Root({
   ...InputStateAnnotation.spec,
   ...OutputStateAnnotation.spec,
   ...TaskStateAnnotation.spec,
-
+  
   tasks: Annotation<Task[]>({
-    reducer: (a, b) => a.concat(b),
+    reducer: (x, y) => y ?? x,
     default: () => [],
   }),
+
+  feedback: Annotation<string>({
+    reducer: (x, y) => y ?? x,
+    default: () => "",
+  }),
+
   hasEnoughInfo: Annotation<boolean>({
     reducer: (x, y) => y ?? x,
     default: () => false,
   }),
-  reasoning: Annotation<string>({
+
+  // Narrative & Template State
+  narrative: Annotation<NarrativeOutline>({
     reducer: (x, y) => y ?? x,
-    default: () => "",
+    default: () => ({} as NarrativeOutline),
   }),
-  missingInfo: Annotation<string[]>({
-    reducer: (x, y) => y ?? x,
-    default: () => [],
-  }),
-  narrative: Annotation<any>({
-    reducer: (x, y) => y ?? x,
-    default: () => null,
-  }),
-  scenes: Annotation<any[]>({
+  scenes: Annotation<SceneSpec[]>({
     reducer: (x, y) => y ?? x,
     default: () => [],
   }),
-  cards: Annotation<any[]>({
+  cards: Annotation<Card[]>({
     reducer: (x, y) => y ?? x,
     default: () => [],
   }),
   timeline: Annotation<any>({
-    reducer: (x, y) => y ?? x,
-    default: () => null,
-  }),
-  templateJson: Annotation<any>({
     reducer: (x, y) => y ?? x,
     default: () => null,
   }),

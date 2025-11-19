@@ -2,6 +2,7 @@
 
 import { readFile, writeFile } from "fs/promises";
 import path from "path";
+import { fileURLToPath } from "url";
 import type { TemplateJson } from "@deep-sql-research/shared";
 
 const CLI_HELP = `
@@ -60,8 +61,10 @@ async function main() {
     console.log(`🎬 ${template.timeline.scenes.length} scenes`);
     console.log(`🎴 ${template.cards.length} cards`);
 
-    // Update the VideoRoot.tsx with the new template
-    const videoRootPath = path.join(process.cwd(), 'src', 'VideoRoot.tsx');
+    // Update the VideoRoot.tsx with the new template (always within renderer src)
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    const videoRootPath = path.join(__dirname, 'VideoRoot.tsx');
     const videoRootCode = generateVideoRootCode(template);
     await writeFile(videoRootPath, videoRootCode, 'utf-8');
 

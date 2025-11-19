@@ -1,9 +1,8 @@
 import { z } from "zod";
-import { generateObject } from 'ai';
 
 import type { AgentStateAnnotation } from "@/agent/state";
 import type { Insight, NarrativeOutline, SceneSpec } from "@shared/types";
-import { llm } from "@/helpers/llm";
+import { generateSchemaObject } from "@/helpers/llm";
 
 const sceneSchema = z.object({
   scenes: z.array(z.object({
@@ -53,14 +52,13 @@ Scene Planning Strategy:
 Return a complete scene plan.`;
 
   try {
-    const result = await generateObject({
-      model: llm,
+    const result = await generateSchemaObject({
       schema: sceneSchema,
       prompt,
       temperature: 0.3,
     });
 
-    const scenes: SceneSpec[] = result.object.scenes;
+    const scenes: SceneSpec[] = result.scenes;
     
     console.log(`Planned ${scenes.length} scenes for narrative`);
     

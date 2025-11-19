@@ -1,4 +1,4 @@
-import { END, START, StateGraph } from "@langchain/langgraph";
+import { END, START, StateGraph, Send } from "@langchain/langgraph";
 
 import {
   AgentStateAnnotation,
@@ -13,6 +13,7 @@ import { generateQueryNode } from "@/nodes/generate-query";
 import { executeQueryNode } from "@/nodes/execute-query";
 import { assignTaskNode } from "@/nodes/assign-task";
 import { initializeDatabaseNode } from "@/nodes/initialize-database";
+import { analyzeResultsNode } from "@/nodes/analyze-results";
 import { synthesizeInsightsNode } from "@/nodes/synthesize-insights";
 import { enoughInfoGateNode } from "@/nodes/enough-info-gate";
 import { narrativeSubGraph } from "./narrative-graph";
@@ -20,10 +21,12 @@ import { narrativeSubGraph } from "./narrative-graph";
 const searchSubGraph = new StateGraph(TaskStateAnnotation)
   .addNode(Nodes.GENERATE_QUERY, generateQueryNode)
   .addNode(Nodes.EXECUTE_QUERY, executeQueryNode)
+  .addNode(Nodes.ANALYZE_RESULTS, analyzeResultsNode)
 
   .addEdge(START, Nodes.GENERATE_QUERY)
   .addEdge(Nodes.GENERATE_QUERY, Nodes.EXECUTE_QUERY)
-  .addEdge(Nodes.EXECUTE_QUERY, END)
+  .addEdge(Nodes.EXECUTE_QUERY, Nodes.ANALYZE_RESULTS)
+  .addEdge(Nodes.ANALYZE_RESULTS, END)
   .compile();
 
 const workflow = new StateGraph({
@@ -45,7 +48,15 @@ const workflow = new StateGraph({
 workflow.addEdge(START, Nodes.INITIALIZE_DATABASE);
 workflow.addEdge(Nodes.INITIALIZE_DATABASE, Nodes.GENERATE_RESEARCH_PLAN);
 workflow.addEdge(Nodes.GENERATE_RESEARCH_PLAN, Nodes.REVIEW_PLAN);
-workflow.addEdge(Nodes.ASSIGN_TASK, Nodes.SEARCH);
+workflow.addEdge(Nodes.REVIEW_PLAN, Nodes.ASSIGN_TASK);
+
+// Create routing function for parallel task execution
+const routeTasks = (state: typeof AgentStateAnnotation.State) => {
+  const { tasks } = state;
+  return tasks.map((task) => new Send(Nodes.SEARCH, { currentTask: task }));
+};
+
+workflow.addConditionalEdges(Nodes.ASSIGN_TASK, routeTasks);
 workflow.addEdge(Nodes.SEARCH, Nodes.SYNTHESIZE_INSIGHTS);
 workflow.addEdge(Nodes.SYNTHESIZE_INSIGHTS, Nodes.ENOUGH_INFO_GATE);
 
@@ -55,7 +66,7 @@ workflow.addConditionalEdges(
   (state) => state.hasEnoughInfo ? "enough" : "continue",
   {
     enough: Nodes.NARRATIVE_GRAPH,
-    continue: Nodes.ASSIGN_TASK,
+    continue: Nodes.GENERATE_RESEARCH_PLAN,
   }
 );
 

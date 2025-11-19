@@ -46,7 +46,7 @@ const summarizeData = (data: any[]): string => {
 export const synthesizeInsightsNode = async (
   state: typeof TaskStateAnnotation.State & typeof AgentStateAnnotation.State
 ) => {
-  const { results, query, currentTask, goal, insights: existingInsights = [] } = state;
+  const { results, query, currentTask, goal, insights: existingInsights = [], analysis } = state;
 
   if (!results || results.length === 0) {
     return { insights: existingInsights };
@@ -61,6 +61,8 @@ Current Task: ${currentTask.description}
 Query: ${query}
 Results Summary:
 ${dataSummary}
+
+${analysis ? `\nAnalysis of Results:\n- Relevance: ${analysis.isRelevant}\n- Quality: ${analysis.dataQuality}\n- Patterns: ${analysis.keyPatterns?.join(", ") || "None"}\n` : ""}
 
 Generate insights following these guidelines:
 1. Each insight should have a clear, descriptive title

@@ -1,12 +1,11 @@
 import { z } from "zod";
-import { generateObject } from 'ai';
 
 import {
   generateQuerySystemPrompt,
   generateSqlQueryPrompt,
 } from "@/agent/prompts";
 import type { TaskStateAnnotation } from "@/agent/state";
-import { llm } from "@/helpers/llm";
+import { generateSchemaObject } from "@/helpers/llm";
 import { listTableSchemas } from "@/helpers/db";
 
 const outputSchema = z.object({
@@ -27,13 +26,12 @@ export const generateQueryNode = async (
   const dbSchema = await listTableSchemas();
   const systemMessagePrompt = generateQuerySystemPrompt(dbSchema);
 
-  const result = await generateObject({
-    model: llm,
+  const result = await generateSchemaObject({
     schema: outputSchema,
     prompt: `${systemMessagePrompt}\n\n${prompt}`,
     temperature: 0,
   });
 
-  const { query, params } = result.object;
+  const { query, params } = result;
   return { query, params };
 };

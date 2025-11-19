@@ -12,7 +12,7 @@
     "type-check": "turbo run type-check",
     "clean": "turbo run clean",
     "studio": "turbo run studio --filter=agent",
-    "generate-video": "bun run packages/agent/src/index.ts > template.json && bun run apps/renderer/src/cli.ts template.json"
+    "generate-video": "bun run packages/agent/src/index.ts \"Analyze Netflix content performance to understand what makes a show successful\" packages/agent/netflixdb.sqlite > template.json && bun run apps/renderer/src/cli.ts template.json"
   },
   "devDependencies": {
     "@types/bun": "^1.2.14",

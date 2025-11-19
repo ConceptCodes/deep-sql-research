@@ -46,9 +46,17 @@ export async function listTableSchemas(): Promise<string> {
     out += `Table: ${name}\nColumns:\n`;
 
     const cols = await db.all(`PRAGMA table_info(${JSON.stringify(name)});`);
+    const fks = await db.all(`PRAGMA foreign_key_list(${JSON.stringify(name)});`);
+
+    // Create a map of columns that are foreign keys for easy lookup
+    const fkMap = new Map<string, string>();
+    for (const fk of fks) {
+      fkMap.set(fk.from, `(FK -> ${fk.table}.${fk.to})`);
+    }
 
     for (const c of cols) {
-      out += `  • ${c.name}: ${c.type}${c.pk ? " (PK)" : ""}\n`;
+      const fkInfo = fkMap.get(c.name) || "";
+      out += `  • ${c.name}: ${c.type}${c.pk ? " (PK)" : ""} ${fkInfo}\n`;
     }
     out += "\n";
   }

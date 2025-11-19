@@ -2,7 +2,6 @@ import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 
 import type { AgentStateAnnotation } from "@/agent/state";
 import { connectToDatabase } from "@/helpers/db";
-import { llm } from "@/helpers/llm";
 
 export const initializeDatabaseNode = async (state: typeof AgentStateAnnotation.State) => {
   const { dbUrl } = state;

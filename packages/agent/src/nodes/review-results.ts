@@ -1,8 +1,7 @@
 import { z } from "zod";
-import { generateObject } from 'ai';
 
 import type { TaskStateAnnotation } from "@/agent/state";
-import { llm } from "@/helpers/llm";
+import { generateSchemaObject } from "@/helpers/llm";
 
 const outputSchema = z.object({
   followUpQuestions: z
@@ -15,8 +14,7 @@ export const reviewResultsNode = async (
 ) => {
   const { results, query, currentTask } = state;
   
-  const result = await generateObject({
-    model: llm,
+  const result = await generateSchemaObject({
     schema: outputSchema,
     prompt: `Based on the following SQL query results, generate follow-up questions for the user.
 
@@ -26,5 +24,5 @@ Results: ${JSON.stringify(results, null, 2)}`,
     temperature: 0,
   });
 
-  return { followUpQuestions: result.object.followUpQuestions };
+  return { followUpQuestions: result.followUpQuestions };
 };

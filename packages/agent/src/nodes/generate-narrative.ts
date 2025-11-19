@@ -1,9 +1,8 @@
 import { z } from "zod";
-import { generateObject } from 'ai';
 
 import type { AgentStateAnnotation } from "@/agent/state";
 import type { Insight, NarrativeOutline } from "@shared/types";
-import { llm } from "@/helpers/llm";
+import { generateSchemaObject } from "@/helpers/llm";
 
 const narrativeSchema = z.object({
   title: z.string(),
@@ -22,12 +21,19 @@ export const generateNarrativeNode = async (
 ) => {
   const { goal, insights } = state;
 
+  // Sort by confidence and limit to avoid context overflow
+  const topInsights = [...insights]
+    .sort((a, b) => (b.confidence || 0) - (a.confidence || 0))
+    .slice(0, 50);
+
+  console.log(`Generating narrative using top ${topInsights.length} insights (out of ${insights.length} total)`);
+
   const prompt = `Create a narrative outline for a data-driven video presentation based on the user's goal and gathered insights.
 
 Goal: ${goal}
 
-Available Insights:
-${insights.map(i => `- [${i.id}] ${i.title} (${i.type}): ${i.summary}`).join('\n')}
+Available Insights (Top ${topInsights.length}):
+${topInsights.map(i => `- [${i.id}] ${i.title} (${i.type}): ${i.summary}`).join('\n')}
 
 Create a compelling narrative structure with these sections:
 1. **intro**: Hook the viewer, introduce the topic, set context
@@ -46,14 +52,13 @@ Guidelines:
 Return a complete narrative outline.`;
 
   try {
-    const result = await generateObject({
-      model: llm,
+    const result = await generateSchemaObject({
       schema: narrativeSchema,
       prompt,
       temperature: 0.4,
     });
 
-    const narrative: NarrativeOutline = result.object;
+    const narrative: NarrativeOutline = result;
     
     console.log(`Generated narrative: "${narrative.title}" with ${narrative.sections.length} sections`);
     
@@ -77,7 +82,7 @@ Return a complete narrative outline.`;
           type: 'key_insights',
           title: 'Key Findings',
           description: 'Main insights from the data',
-          insightIds: insights.slice(0, 3).map(i => i.id),
+          insightIds: topInsights.slice(0, 3).map(i => i.id),
           priority: 2,
         },
         {
@@ -85,7 +90,7 @@ Return a complete narrative outline.`;
           type: 'outro',
           title: 'Conclusion',
           description: 'Summary of key takeaways',
-          insightIds: insights.slice(0, 2).map(i => i.id),
+          insightIds: topInsights.slice(0, 2).map(i => i.id),
           priority: 3,
         },
       ],
